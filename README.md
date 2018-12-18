@@ -7,7 +7,7 @@ Example: ````g++ main.cpp matrix.cpp console_position.cpp -o main````
 
 ### Currently supported functions with this Matrix class:
 * Entering a Matrix
-* Priting a Matrix in [] notation
+* Priting a Matrix in [ ] notation
 * Matrix Addition
 * Matrix Subtraction
 * Matrix Multiplication
