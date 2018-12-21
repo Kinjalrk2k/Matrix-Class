@@ -7,12 +7,18 @@ Example: ````g++ main.cpp matrix.cpp console_position.cpp -o main````
 
 ### Currently supported functions with this Matrix class:
 * Entering a Matrix
-* Priting a Matrix in [ ] notation
+* Printing a Matrix in [ ] notation
 * Matrix Addition
 * Matrix Subtraction
 * Matrix Multiplication
+* Scaler Multiplication to a Matrix
+* Scaler Division to a Matrix
 * Cofactors of a matrix of a specific order
+* Cofactor of the total Matrix
 * Determinant of a Matrix
+* Transpose of a Matrix
+* Adjoint of a Matrix
+* Inverse of a Matrix
 
 ### Notes on in.txt
 A in.txt file has been included for easy inputting of matrix while debugging the code. One can use the in.txt file to save the input in plaintext which may can be used to debug the code without manually inputting on each executuon time.<br>
