@@ -28,8 +28,13 @@ class Matrix
         friend Matrix operator+(Matrix& m1, Matrix& m2);
         friend Matrix operator-(Matrix& m1, Matrix& m2);
         friend Matrix operator*(Matrix& m1, Matrix& m2);
+        friend Matrix operator*(Matrix& m, double coeff);
+        friend Matrix operator/(Matrix& m, double coeff);
 
         friend Matrix cofactor(Matrix& m, int r, int c);
         friend double determinant(Matrix& m);
-        friend Matrix row_reduced(Matrix& m);
+        friend Matrix cofactor(Matrix& m);        
+        friend Matrix transpose(Matrix& m);
+        friend Matrix adjoint(Matrix& m);
+        friend Matrix inverse(Matrix& m);
 };
