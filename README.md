@@ -2,8 +2,13 @@
 A matrix class for ease at matrix operations
 
 ### Build Using:
-````g++ <source_file_name>.cpp matrix.cpp console_position.cpp -o <executable_file_name>````<br>
-Example: ````g++ main.cpp matrix.cpp console_position.cpp -o main````
+````c++
+g++ <source_file_name>.cpp matrix.cpp console_position.cpp -o <executable_file_name>
+````
+Example: 
+````c++ 
+g++ main.cpp matrix.cpp console_position.cpp -o main
+````
 
 ### Currently supported functions with this Matrix class:
 * Entering a Matrix
