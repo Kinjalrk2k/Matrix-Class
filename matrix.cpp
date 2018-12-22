@@ -85,7 +85,12 @@ ostream& operator<<(ostream &out, Matrix& m)
     {
         out<<(char)179; //  printing left cover
         for(int j=0; j<m.cols; j++)
-            out<<setw(m.max_space)<<setfill(' ')<<m.matrix_m[i][j]<<" ";
+        {
+            if(m.matrix_m[i][j] == -0)  //  -0 adjustment
+                out<<setw(m.max_space)<<setfill(' ')<<0<<" ";
+            else
+                out<<setw(m.max_space)<<setfill(' ')<<m.matrix_m[i][j]<<" ";
+        }
         out<<"\b";
 
         /*  computing the maximum right cover position    */
@@ -123,7 +128,7 @@ istream& operator>>(istream &in, Matrix &m)
 }
 
 /*  oveloading + operator to add two matrices  */
-Matrix operator+(Matrix& m1, Matrix& m2)
+Matrix operator+(const Matrix& m1, const Matrix& m2)
 {
     Matrix res(m1.rows, m1.cols);
     if(m1.rows == m2.rows && m1.cols == m2.cols)    //  if square matrix
@@ -141,7 +146,7 @@ Matrix operator+(Matrix& m1, Matrix& m2)
 }
 
 /*  oveloading - operator to subtract two matrices  */
-Matrix operator-(Matrix& m1, Matrix& m2)
+Matrix operator-(const Matrix& m1, const Matrix& m2)
 {
     Matrix res(m1.rows, m1.cols);
     if(m1.rows == m2.rows && m1.cols == m2.cols)    //  if square matrix
@@ -159,7 +164,7 @@ Matrix operator-(Matrix& m1, Matrix& m2)
 }
 
 /*  oveloading + operator to add two matrices  */
-Matrix operator*(Matrix& m1, Matrix& m2)
+Matrix operator*(const Matrix& m1, const Matrix& m2)
 {
     Matrix res(m1.rows, m2.cols);
 
@@ -183,7 +188,7 @@ Matrix operator*(Matrix& m1, Matrix& m2)
 }
 
 /*  overloading * operator to multiply a scaler value to a matrix   */
-Matrix operator*(Matrix& m, double coeff)
+Matrix operator*(const Matrix& m, const double coeff)
 {
     Matrix res(m.rows, m.cols);
 
@@ -197,7 +202,7 @@ Matrix operator*(Matrix& m, double coeff)
 }
 
 /*  overloading / operator to divide a scaler value to a matrix   */
-Matrix operator/(Matrix& m, double coeff)
+Matrix operator/(const Matrix& m, const double coeff)
 {
     Matrix res(m.rows, m.cols);
 
@@ -211,7 +216,7 @@ Matrix operator/(Matrix& m, double coeff)
 }
 
 /*  compute cofactor matrix of a specific element located at [r,c] */
-Matrix cofactor(Matrix& m, int r, int c)
+Matrix cofactor(const Matrix& m, int r, int c)
 {
     Matrix cf(m.rows-1, m.rows-1);
 
@@ -237,7 +242,7 @@ Matrix cofactor(Matrix& m, int r, int c)
 }
 
 /*  compute determinate value of a matrix(reccursively)   */
-double determinant(Matrix& m)
+double determinant(const Matrix& m)
 {
     double det = 0.0;
     int sign = 1;
@@ -255,7 +260,7 @@ double determinant(Matrix& m)
 }
 
 /*  compute cofactor matrix of the total matrix */
-Matrix cofactor(Matrix& m)
+Matrix cofactor(const Matrix& m)
 {
     Matrix cf(m.rows, m.cols);
 
@@ -277,7 +282,7 @@ Matrix cofactor(Matrix& m)
 }
 
 /*  compute transpose of a matrix   */
-Matrix transpose(Matrix& m)
+Matrix transpose(const Matrix& m)
 {
     Matrix trans(m.cols, m.rows);
 
@@ -291,7 +296,7 @@ Matrix transpose(Matrix& m)
 }
 
 /*  compute adjoint of a matrix */
-Matrix adjoint(Matrix& m)
+Matrix adjoint(const Matrix& m)
 {
     Matrix adj(m.rows, m.cols);
 
@@ -302,7 +307,7 @@ Matrix adjoint(Matrix& m)
 }
 
 /*  compute the inverse of the matrix   */
-Matrix inverse(Matrix& m)
+Matrix inverse(const Matrix& m)
 {
     Matrix inv(m.rows, m.cols);
 
@@ -311,4 +316,194 @@ Matrix inverse(Matrix& m)
     inv = adj / det;
 
     return inv;
+}
+
+/* overloading ~ operator to compute the inverse    */
+Matrix operator~(const Matrix& m)   //  inverse
+{
+    Matrix inv(m.rows, m.cols);
+
+    Matrix adj = adjoint(m);
+    double det = determinant(m);
+    inv = adj / det;
+
+    return inv;
+}
+
+/* overloading [] operator to return tha matirx element in the passed position    */
+double Matrix::operator[](pair<int, int> rc)
+{
+    return this->matrix_m[rc.first][rc.second];
+}
+
+/*  break the whole matrix into seperate rows for row operations    */
+void disintegrate_row(Matrix& m, Row& r, int r_no)
+{
+    r.row_m = new double[m.cols];
+    r.cols = m.cols;
+
+    for(int i=0; i<m.cols; i++)
+        r.row_m[i] = m.matrix_m[r_no][i];
+}
+
+/*  join back the broken rows into the matrix   */
+void integrate_row(Matrix& m, Row& r, int r_no)
+{
+    for(int i=0; i<m.cols; i++)
+        m.matrix_m[r_no][i] = r.row_m[i];
+}
+
+/*  row operation: multiply a row with a scaler */
+Row operator*(const Row& r, double coeff)
+{
+    Row res;
+    res.row_m = new double[r.cols];
+    res.cols = r.cols;
+
+    for(int i=0; i<r.cols; i++)
+        res.row_m[i] = coeff * r.row_m[i];
+
+    return res;
+}
+
+/*  row operation: divide a row with a scaler */
+Row operator/(const Row& r, const double coeff)
+{
+    Row res;
+    res.row_m = new double[r.cols];
+    res.cols = r.cols;
+
+    for(int i=0; i<r.cols; i++)
+        res.row_m[i] = r.row_m[i] / coeff;
+
+    return res;
+}
+
+/*  row operation: add a row with another row */
+Row operator+(const Row& r1, const Row& r2)
+{
+    Row res;
+    res.row_m = new double[r1.cols];
+    res.cols = r1.cols;
+
+    for(int i=0; i<r1.cols; i++)
+        res.row_m[i] = r1.row_m[i] + r2.row_m[i];
+
+    return res;
+}
+
+/*  row operation: subtract a row from another row */
+Row operator-(const Row& r1, const Row& r2)
+{
+    Row res;
+    res.row_m = new double[r1.cols];
+    res.cols = r1.cols;
+
+    for(int i=0; i<r1.cols; i++)
+        res.row_m[i] = r1.row_m[i] - r2.row_m[i];
+
+    return res;
+}
+
+/*  swap two rows   */
+void swap(Row& r1, Row& r2)
+{
+    Row temp;
+    temp = r1;
+    r1 = r2;
+    r2 = temp;
+}
+
+/*  print a row */
+void Row::print()
+{
+    for(int i=0; i<cols; i++)
+        cout<<row_m[i]<<" ";
+    cout<<endl;
+}
+
+/*  break the whole matrix into seperate columns for coloumn operations    */
+void disintegrate_col(Matrix& m, Col& c, int c_no)
+{
+    c.col_m = new double[m.rows];
+    c.rows = m.rows;
+
+    for(int i=0; i<m.rows; i++)
+        c.col_m[i] = m.matrix_m[i][c_no];
+}
+
+/*  join back the broken columns into the matrix   */
+void integrate_col(Matrix& m, Col& c, int c_no)
+{
+    for(int i=0; i<m.rows; i++)
+        m.matrix_m[i][c_no] = c.col_m[i];
+}
+
+/*  coloumn operation: multiply a column with a scaler */
+Col operator*(const Col& c, double coeff)
+{
+    Col res;
+    res.col_m = new double[c.rows];
+    res.rows = c.rows;
+
+    for(int i=0; i<c.rows; i++)
+        res.col_m[i] = coeff * c.col_m[i];
+
+    return res;
+}
+
+/*  coloumn operation: divide a column with a scaler */
+Col operator/(const Col& r, const double coeff)
+{
+    Col res;
+    res.col_m = new double[r.rows];
+    res.rows = r.rows;
+
+    for(int i=0; i<r.rows; i++)
+        res.col_m[i] = r.col_m[i] / coeff;
+
+    return res;
+}
+
+/*  coloumn operation: add a column with another coloumn */
+Col operator+(const Col& r1, const Col& r2)
+{
+    Col res;
+    res.col_m = new double[r1.rows];
+    res.rows = r1.rows;
+
+    for(int i=0; i<r1.rows; i++)
+        res.col_m[i] = r1.col_m[i] + r2.col_m[i];
+
+    return res;
+}
+
+/*  coloumn operation: subtract a column from another coloumn */
+Col operator-(const Col& r1, const Col& r2)
+{
+    Col res;
+    res.col_m = new double[r1.rows];
+    res.rows = r1.rows;
+
+    for(int i=0; i<r1.rows; i++)
+        res.col_m[i] = r1.col_m[i] - r2.col_m[i];
+
+    return res;
+}
+
+/*  swap two columns    */
+void swap(Col& c1, Col& c2)
+{
+    Col temp;
+    temp = c1;
+    c1 = c2;
+    c2 = temp;
+}
+
+/*  print a coloumn */
+void Col::print()
+{
+    for(int i=0; i<rows; i++)
+        cout<<col_m[i]<<" ";
+    cout<<endl;
 }
