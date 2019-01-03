@@ -28,6 +28,9 @@ g++ main.cpp matrix.cpp console_position.cpp -o main
   - Adding/Subtracting two Row/Coloumns
   - Multiplying a Row/Coloumn with a scaler Constant
   - Interchanging two Row/Column
+* Convert a matix to its Row Reduced Echelon form
+  - An option of displying the exact steps for the compution
+* Compute Rank of a Matrix(by converting it into a row rduced echelon form)
 
 ### Notes on in.txt
 A in.txt file has been included for easy inputting of matrix while debugging the code. One can use the in.txt file to save the input in plaintext which may can be used to debug the code without manually inputting on each executuon time.<br>
