@@ -35,7 +35,7 @@ class Matrix
         friend Matrix operator*(const Matrix& m, const double coeff);
         friend Matrix operator/(const Matrix& m, const double coeff);
         friend Matrix operator~(const Matrix& m);   //  inverse
-        double operator[](pair<int, int> rc);
+        double operator[](pair<int, int> rc);       //  get element of the matrix
 
         friend Matrix cofactor(const Matrix& m, int r, int c);
         friend double determinant(const Matrix& m);
@@ -43,6 +43,8 @@ class Matrix
         friend Matrix transpose(const Matrix& m);
         friend Matrix adjoint(const Matrix& m);
         friend Matrix inverse(const Matrix& m);
+        friend Matrix rref(Matrix m, bool disp_steps);
+        friend int Rank(const Matrix& m);
 
         friend void disintegrate_row(Matrix& m, Row& r, int r_no);
         friend void integrate_row(Matrix& m, Row& r, int r_no);
@@ -68,6 +70,8 @@ class Row
         friend Row operator-(const Row& r1, const Row& r2);
 
         friend void swap(Row& r1, Row& r2);
+
+        friend Matrix rref(Matrix m, bool disp_steps);
 
         void print();
 };

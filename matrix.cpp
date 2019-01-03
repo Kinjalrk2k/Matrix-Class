@@ -507,3 +507,86 @@ void Col::print()
         cout<<col_m[i]<<" ";
     cout<<endl;
 }
+
+/*  Returns the row-reduced-echelon-matrix form of the passed matrix    */
+Matrix rref(Matrix m, bool disp_steps)
+{
+    Matrix rre(m.rows, m.cols);
+    Row* r;
+    r = new Row[rre.rows];
+
+    for(int i=0; i<m.rows; i++)
+        disintegrate_row(m, r[i], i);
+
+    for(int i=0, j=0; i<rre.rows, j<rre.cols; i++)
+    {
+        if(r[i].row_m[j] == 0)
+        {
+            bool found = false;
+            for(int k=i+1; k<rre.rows; k++)
+            {
+                if(r[k].row_m[j] != 0)
+                {
+                    swap(r[i], r[k]);
+                    found = true;
+
+                    if(disp_steps)
+                        printf("R%d <-> R%d", i+1, k+1);
+                    break;
+                }
+            }
+            if(!found)
+                j++;
+        }
+
+        else
+        {
+            r[i] = r[i] / r[i].row_m[j];
+            for(int k=i+1; k<rre.rows; k++)
+            {
+                double divi = r[i].row_m[j];
+                double multi = r[k].row_m[j];
+                double net_multi = multi/divi;
+                r[k] = r[k] - (r[i]*net_multi);
+
+                if(disp_steps)
+                    printf("R%d\' -> R%d %c %g*R%d\n", k+1, k+1, ((net_multi>=0)? '-': '+') , abs(net_multi), i+1);
+            }
+            j++;
+        }
+
+        if(disp_steps)
+        {
+            for(int i=0; i<rre.rows; i++)
+                integrate_row(rre, r[i], i);
+            cout<<rre<<endl<<endl;
+
+            for(int i=0; i<rre.rows; i++)
+                disintegrate_row(rre, r[i], i);
+        }
+    }
+    
+    for(int i=0; i<rre.rows; i++)
+        integrate_row(rre, r[i], i);
+
+    return rre;
+}
+
+ /*  computes the rank of the passed matrix throughits rref form */
+int Rank(const Matrix& m)
+{
+    Matrix rre = rref(m, false);
+    int non_zero_row = 0;
+    for(int i=0; i<rre.rows; i++)
+    {
+        for(int j=0; j<rre.cols; j++)
+        {
+            if(rre.matrix_m[i][j]!=0)
+            {
+                non_zero_row++;
+                break;
+            }
+        }
+    }
+    return non_zero_row;
+}
